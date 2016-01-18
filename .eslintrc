@@ -15,6 +15,14 @@
     "__BASENAME__" : false
   },
   "rules": {
-    "semi" : [2, "always"]
+    "semi": [2, "always"],
+    "key-spacing": [
+      2,
+      {
+        "align": "colon",
+        "beforeColon": true,
+        "afterColon": true
+      }
+    ]
   }
 }
