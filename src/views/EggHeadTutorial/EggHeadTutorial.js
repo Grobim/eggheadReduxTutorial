@@ -1,12 +1,77 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { createStore } from 'redux';
 import expect from 'expect';
 import deepFreeze from 'deep-freeze';
+
+const todo = (state, action) => {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return {
+        id        : action.id,
+        text      : action.text,
+        completed : false
+      };
+    case 'TOGGLE_TODO':
+      if (state.id !== action.id) {
+        return state;
+      }
+      return {
+        ...state,
+        completed : !state.completed
+      };
+    default:
+      return state;
+  };
+};
+
+const todos = (state = [], action) => {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return [
+        ...state,
+        todo(undefined, action)
+      ];
+    case 'TOGGLE_TODO':
+      return state.map(t =>
+        todo(t, action)
+      );
+    default:
+      return state;
+  }
+};
+
+const visibilityFilter = (
+  state = 'SHOW_ALL',
+  action
+) => {
+  switch (action.type) {
+    case 'SET_VISIBILITY_FILTER':
+      return action.filter;
+    default:
+      return state;
+  }
+};
+
+const todoApp = (state = {}, action) => {
+  return {
+    todos : todos(
+      state.todos,
+      action
+    ),
+    visibilityFilter : visibilityFilter(
+      state.visibilityFilter,
+      action
+    )
+  };
+};
 
 export default class EggHeadTutorial extends React.Component {
 
   constructor (props) {
     super(props);
+
+    this.storeLogger();
 
     this.test();
 
@@ -14,43 +79,6 @@ export default class EggHeadTutorial extends React.Component {
   }
 
   test = () => {
-    const todo = (state, action) => {
-      switch (action.type) {
-        case 'ADD_TODO':
-          return {
-            id        : action.id,
-            text      : action.text,
-            completed : false
-          };
-        case 'TOGGLE_TODO':
-          if (state.id !== action.id) {
-            return state;
-          }
-          return {
-            ...state,
-            completed : !state.completed
-          };
-        default:
-          return state;
-      };
-    };
-
-    const todos = (state = [], action) => {
-      switch (action.type) {
-        case 'ADD_TODO':
-          return [
-            ...state,
-            todo(undefined, action)
-          ];
-        case 'TOGGLE_TODO':
-          return state.map(t =>
-            todo(t, action)
-          );
-        default:
-          return state;
-      }
-    };
-
     const testAddTodo = () => {
       const stateBefore = [];
       const action = {
@@ -118,6 +146,47 @@ export default class EggHeadTutorial extends React.Component {
 
     testAddTodo();
     testToggleTodo();
+  };
+
+  storeLogger = () => {
+    let store = createStore(todoApp);
+
+    console.log('###  ORG  ###');
+    console.log(store.getState());
+
+    store.dispatch({
+      id   : 0,
+      text : 'first',
+      type : 'ADD_TODO'
+    });
+
+    console.log('###  ADD  ###');
+    console.log(store.getState());
+
+    store.dispatch({
+      id   : 1,
+      text : 'second',
+      type : 'ADD_TODO'
+    });
+
+    console.log('###  ADD  ###');
+    console.log(store.getState());
+
+    store.dispatch({
+      id   : 0,
+      type : 'TOGGLE_TODO'
+    });
+
+    console.log('###  TOG  ###');
+    console.log(store.getState());
+
+    store.dispatch({
+      filter : 'SHOW_COMPLETED',
+      type   : 'SET_VISIBILITY_FILTER'
+    });
+
+    console.log('###  FIL  ###');
+    console.log(store.getState());
   };
 
   render () {
