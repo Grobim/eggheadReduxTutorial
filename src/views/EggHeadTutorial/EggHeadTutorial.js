@@ -14,35 +14,47 @@ export default class EggHeadTutorial extends React.Component {
   }
 
   test = () => {
-    const toggleTodo = (todo) => {
-      return {
-        ...todo,
-        completed : !todo.completed
-      };
+    const todos = (state = [], action) => {
+      switch (action.type) {
+        case 'ADD_TODO':
+          return [
+            ...state,
+            {
+              id        : action.id,
+              text      : action.text,
+              completed : false
+            }
+          ];
+        default:
+          return state;
+      }
     };
 
-    const testToggleTodo = () => {
-      const todoBefore = {
-        id        : 0,
-        test      : 'Learn Redux',
-        completed : false
+    const testAddTodo = () => {
+      const stateBefore = [];
+      const action = {
+        type : 'ADD_TODO',
+        id   : 0,
+        text : 'Learn Redux'
       };
-      const todoAfter = {
-        id        : 0,
-        test      : 'Learn Redux',
-        completed : true
-      };
+      const stateAfter = [
+        {
+          id        : 0,
+          text      : 'Learn Redux',
+          completed : false
+        }
+      ];
 
-      deepFreeze(todoBefore);
+      deepFreeze(stateBefore);
+      deepFreeze(action);
 
       expect(
-        toggleTodo(todoBefore)
-      ).toEqual(todoAfter);
-
-      console.log('Test passed : testToggleTodo');
+        todos(stateBefore, action)
+      ).toEqual(stateAfter);
+      console.log('Test passed : testAddTodo');
     };
 
-    testToggleTodo();
+    testAddTodo();
   };
 
   render () {
