@@ -1,4 +1,6 @@
 import React from 'react';
+import { createStore } from 'redux';
+import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
 
 export default class EggHeadTutorial extends React.Component {
@@ -23,45 +25,40 @@ export default class EggHeadTutorial extends React.Component {
       }
     };
 
-    const createStore = (reducer) => {
-      let state;
-      let listeners = [];
-
-      const getState = () => state;
-
-      const dispatch = (action) => {
-        state = reducer(state, action);
-        listeners.forEach(listener => listener());
-      };
-
-      const subscribe = (listener) => {
-        listeners.push(listener);
-        return () => {
-          listeners = listeners.filter(l => l !== listener);
-        };
-      };
-
-      dispatch({});
-
-      return { getState, dispatch, subscribe };
-    };
-
     const store = createStore(counter);
 
+    const Counter = ({
+      value,
+      onIncrement,
+      onDecrement
+    }) => (
+      <div>
+        <h1>{value}</h1>
+        <button onClick={onIncrement}>+</button>
+        <button onClick={onDecrement}>-</button>
+      </div>
+    );
+
     const render = () => {
-      document.getElementsByClassName('episode6')[0].innerText = store.getState();
+      ReactDOM.render(
+        <Counter
+          value={store.getState()}
+          onIncrement={() =>
+            store.dispatch({
+              type : 'INCREMENT'
+            })
+          }
+          onDecrement={() =>
+            store.dispatch({
+              type : 'DECREMENT'
+            })
+          } />,
+        document.getElementsByClassName('tutorial')[0]
+      );
     };
 
-    const cancel = store.subscribe(render);
-    setTimeout(render, 100);
-
-    document.body.addEventListener('click', () => {
-      if (store.getState() === 5) {
-        cancel();
-      } else {
-        store.dispatch({ type : 'INCREMENT' });
-      }
-    });
+    store.subscribe(render);
+    setTimeout(render, 500);
   };
 
   render () {
@@ -71,7 +68,7 @@ export default class EggHeadTutorial extends React.Component {
         <p>Check out the console for assertions</p>
         <p>The root of the tests are in views/EggHeadTutorial/EggHeadTutorial.js</p>
         <hr />
-        <div className='episode6'></div>
+        <div className='tutorial'></div>
         <Link to='/'>Back To Home View</Link>
       </div>
     );
