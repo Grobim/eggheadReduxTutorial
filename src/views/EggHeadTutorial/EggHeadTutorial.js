@@ -1,8 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { createStore, combineReducers } from 'redux';
+import { createStore } from 'redux';
 import expect from 'expect';
 import deepFreeze from 'deep-freeze';
+
+const combineReducers = (reducers) => {
+  return (state = {}, action) => {
+    return Object.keys(reducers).reduce(
+      (nextState, key) => {
+        nextState[key] = reducers[key](
+          state[key],
+          action
+        );
+        return nextState;
+      },
+      {}
+    );
+  };
+};
 
 const todo = (state, action) => {
   switch (action.type) {
