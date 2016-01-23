@@ -1,5 +1,5 @@
 import React from 'react';
-import expect from 'expect';
+import { createStore } from 'redux';
 import { Link } from 'react-router';
 
 export default class EggHeadTutorial extends React.Component {
@@ -23,30 +23,18 @@ export default class EggHeadTutorial extends React.Component {
           return state;
       }
     };
+    const store = createStore(counter);
 
-    expect(
-      counter(0, { type : 'INCREMENT' })
-    ).toEqual(1);
+    const render = () => {
+      document.getElementsByClassName('episode6')[0].innerText = store.getState();
+    };
 
-    expect(
-      counter(1, { type : 'INCREMENT' })
-    ).toEqual(2);
+    store.subscribe(render);
+    setTimeout(render, 100);
 
-    expect(
-      counter(2, { type : 'DECREMENT' })
-    ).toEqual(1);
-
-    expect(
-      counter(1, { type : 'DECREMENT' })
-    ).toEqual(0);
-
-    expect(
-      counter(1, { type : 'SOMETHING_ELSE' })
-    ).toEqual(1);
-
-    expect(
-      counter(undefined, {})
-    ).toEqual(0);
+    document.body.addEventListener('click', () => {
+      store.dispatch({ type : 'INCREMENT' });
+    });
   };
 
   render () {
@@ -56,6 +44,7 @@ export default class EggHeadTutorial extends React.Component {
         <p>Check out the console for assertions</p>
         <p>The root of the tests are in views/EggHeadTutorial/EggHeadTutorial.js</p>
         <hr />
+        <div className='episode6'></div>
         <Link to='/'>Back To Home View</Link>
       </div>
     );
