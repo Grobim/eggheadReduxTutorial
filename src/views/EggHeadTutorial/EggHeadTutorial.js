@@ -1,5 +1,4 @@
 import React from 'react';
-import { createStore } from 'redux';
 import { Link } from 'react-router';
 
 export default class EggHeadTutorial extends React.Component {
@@ -23,17 +22,45 @@ export default class EggHeadTutorial extends React.Component {
           return state;
       }
     };
+
+    const createStore = (reducer) => {
+      let state;
+      let listeners = [];
+
+      const getState = () => state;
+
+      const dispatch = (action) => {
+        state = reducer(state, action);
+        listeners.forEach(listener => listener());
+      };
+
+      const subscribe = (listener) => {
+        listeners.push(listener);
+        return () => {
+          listeners = listeners.filter(l => l !== listener);
+        };
+      };
+
+      dispatch({});
+
+      return { getState, dispatch, subscribe };
+    };
+
     const store = createStore(counter);
 
     const render = () => {
       document.getElementsByClassName('episode6')[0].innerText = store.getState();
     };
 
-    store.subscribe(render);
+    const cancel = store.subscribe(render);
     setTimeout(render, 100);
 
     document.body.addEventListener('click', () => {
-      store.dispatch({ type : 'INCREMENT' });
+      if (store.getState() === 5) {
+        cancel();
+      } else {
+        store.dispatch({ type : 'INCREMENT' });
+      }
     });
   };
 
