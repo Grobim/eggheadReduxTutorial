@@ -1,7 +1,7 @@
 import React from 'react';
-import { createStore } from 'redux';
-import ReactDOM from 'react-dom';
 import { Link } from 'react-router';
+import expect from 'expect';
+import deepFreeze from 'deep-freeze';
 
 export default class EggHeadTutorial extends React.Component {
 
@@ -14,51 +14,64 @@ export default class EggHeadTutorial extends React.Component {
   }
 
   test = () => {
-    const counter = (state = 0, action) => {
-      switch (action.type) {
-        case 'INCREMENT':
-          return state + 1;
-        case 'DECREMENT':
-          return state - 1;
-        default:
-          return state;
-      }
+    const addCounter = (list) => {
+      return [...list, 0];
     };
 
-    const store = createStore(counter);
-
-    const Counter = ({
-      value,
-      onIncrement,
-      onDecrement
-    }) => (
-      <div>
-        <h1>{value}</h1>
-        <button onClick={onIncrement}>+</button>
-        <button onClick={onDecrement}>-</button>
-      </div>
-    );
-
-    const render = () => {
-      ReactDOM.render(
-        <Counter
-          value={store.getState()}
-          onIncrement={() =>
-            store.dispatch({
-              type : 'INCREMENT'
-            })
-          }
-          onDecrement={() =>
-            store.dispatch({
-              type : 'DECREMENT'
-            })
-          } />,
-        document.getElementsByClassName('tutorial')[0]
-      );
+    const removeCounter = (list, index) => {
+      return [
+        ...list.slice(0, index),
+        ...list.slice(index + 1)
+      ];
     };
 
-    store.subscribe(render);
-    setTimeout(render, 500);
+    const incrementCounter = (list, index) => {
+      return [
+        ...list.slice(0, index),
+        list[index] + 1,
+        ...list.slice(index + 1)
+      ];
+    };
+
+    const testAddCounter = () => {
+      const listBefore = [];
+      const listAfter = [0];
+
+      deepFreeze(listBefore);
+
+      expect(
+        addCounter(listBefore)
+      ).toEqual(listAfter);
+      console.log('Test passed testAddCounter');
+    };
+
+    const testRemoveCounter = () => {
+      const listBefore = [0, 10, 20];
+      const listAfter = [0, 20];
+
+      deepFreeze(listBefore);
+
+      expect(
+        removeCounter(listBefore, 1)
+      ).toEqual(listAfter);
+      console.log('Test passed testRemoveCounter');
+    };
+
+    const testIncrementCounter = () => {
+      const listBefore = [0, 10, 20];
+      const listAfter = [0, 11, 20];
+
+      deepFreeze(listBefore);
+
+      expect(
+        incrementCounter(listBefore, 1)
+      ).toEqual(listAfter);
+      console.log('Test passed testIncrementCounter');
+    };
+
+    testAddCounter();
+    testRemoveCounter();
+    testIncrementCounter();
   };
 
   render () {
@@ -68,7 +81,6 @@ export default class EggHeadTutorial extends React.Component {
         <p>Check out the console for assertions</p>
         <p>The root of the tests are in views/EggHeadTutorial/EggHeadTutorial.js</p>
         <hr />
-        <div className='tutorial'></div>
         <Link to='/'>Back To Home View</Link>
       </div>
     );
