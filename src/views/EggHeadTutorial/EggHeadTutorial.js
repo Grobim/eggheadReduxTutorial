@@ -1,23 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { createStore } from 'redux';
+import { createStore, combineReducers } from 'redux';
 import expect from 'expect';
 import deepFreeze from 'deep-freeze';
 
-const combineReducers = (reducers) => {
-  return (state = {}, action) => {
-    return Object.keys(reducers).reduce(
-      (nextState, key) => {
-        nextState[key] = reducers[key](
-          state[key],
-          action
-        );
-        return nextState;
-      },
-      {}
-    );
-  };
-};
+import TodoApp from '../../containers/TodoApp';
 
 const todo = (state, action) => {
   switch (action.type) {
@@ -202,6 +189,7 @@ export default class EggHeadTutorial extends React.Component {
         <h1>This is the <a href='https://egghead.io/lessons/javascript-redux-the-single-immutable-state-tree' target='_blank'>tutorial</a></h1>
         <p>Check out the console for assertions</p>
         <p>The root of the tests are in views/EggHeadTutorial/EggHeadTutorial.js</p>
+        <TodoApp />
         <hr />
         <Link to='/'>Back To Home View</Link>
       </div>
