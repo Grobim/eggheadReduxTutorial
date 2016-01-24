@@ -25,7 +25,8 @@ export class TodoApp extends React.Component {
   render () {
     const {
       addTodo,
-      todos
+      todos,
+      toggleTodo
     } = this.props;
     return (
       <div>
@@ -45,6 +46,15 @@ export class TodoApp extends React.Component {
           {todos.map(todo =>
             <li
               key={todo.id}
+              onClick={() => {
+                toggleTodo(todo.id);
+              }}
+              style={{
+                textDecoration :
+                  todo.completed
+                    ? 'line-through'
+                    : 'none'
+              }}
             >
               {todo.text}
             </li>

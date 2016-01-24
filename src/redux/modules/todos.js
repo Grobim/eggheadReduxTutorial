@@ -21,7 +21,7 @@ export const addTodo = createAction(
 export const toggleTodo = createAction(
   TOGGLE_TODO,
   (id) => {
-    return id;
+    return { id };
   }
 );
 
